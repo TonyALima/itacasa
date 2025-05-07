@@ -1,0 +1,65 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum TipoPessoa {
+  CLIENTE
+  PROPRIETARIO
+}
+
+model Pessoa {
+  id        String     @id @default(cuid())
+  nome      String
+  cpf       String     @unique
+  tipo      TipoPessoa
+  imoveis   Imovel[]
+  contratos Contrato[]
+}
+
+enum TipoImovel {
+  APARTAMENTO
+  CASA
+}
+
+model Imovel {
+  id             String     @id @default(cuid())
+  cidade         String?
+  bairro         String?
+  valor          Int
+  areaConstruida Float
+  numQuartos     Int
+  tipo           TipoImovel
+  proprietarioId String
+  proprietario   Pessoa     @relation(fields: [proprietarioId], references: [id])
+  contrato       Contrato?
+  tamanhoQuintal Float?
+  andar          Int?
+}
+
+enum TipoOperacao {
+  ALUGUEL
+  VENDA
+}
+
+model Contrato {
+  id           String       @id @default(cuid())
+  dataInicio   DateTime
+  dataFim      DateTime?
+  imovelId     String       @unique
+  imovel       Imovel?      @relation(fields: [imovelId], references: [id])
+  clienteId    String
+  cliente      Pessoa?      @relation(fields: [clienteId], references: [id])
+  tipoOperacao TipoOperacao
+}

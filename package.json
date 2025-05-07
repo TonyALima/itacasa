@@ -18,6 +18,8 @@
   },
   "homepage": "https://github.com/TonyALima/itacasa#readme",
   "dependencies": {
+    "@prisma/client": "^6.7.0",
+    "prisma": "^6.7.0",
     "typescript": "^5.8.3"
   }
 }
