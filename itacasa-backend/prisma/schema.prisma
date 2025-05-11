@@ -6,7 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
+  output = "../node_modules/.prisma/client"
 }
 
 datasource db {
@@ -14,16 +14,18 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum TipoPessoa {
+enum TipoUser {
   CLIENTE
   PROPRIETARIO
 }
 
-model Pessoa {
+model User {
   id        String     @id @default(cuid())
   nome      String
   cpf       String     @unique
-  tipo      TipoPessoa
+  email     String     @unique
+  senha     String
+  tipo      TipoUser
   imoveis   Imovel[]
   contratos Contrato[]
 }
@@ -42,7 +44,7 @@ model Imovel {
   numQuartos     Int
   tipo           TipoImovel
   proprietarioId String
-  proprietario   Pessoa     @relation(fields: [proprietarioId], references: [id])
+  proprietario   User     @relation(fields: [proprietarioId], references: [id])
   contrato       Contrato?
   tamanhoQuintal Float?
   andar          Int?
@@ -60,6 +62,6 @@ model Contrato {
   imovelId     String       @unique
   imovel       Imovel?      @relation(fields: [imovelId], references: [id])
   clienteId    String
-  cliente      Pessoa?      @relation(fields: [clienteId], references: [id])
+  cliente      User?      @relation(fields: [clienteId], references: [id])
   tipoOperacao TipoOperacao
 }
