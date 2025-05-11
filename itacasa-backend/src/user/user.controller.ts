@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, HttpS
 import { UsersService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ApiResponse, ApiOkResponse, ApiCreatedResponse} from '@nestjs/swagger';
+import { ApiResponse, ApiOkResponse, ApiCreatedResponse, ApiNotFoundResponse} from '@nestjs/swagger';
 import { UserDto } from './dto/user.dto';
 import { CommonResponses } from 'src/commom.responses';
 
@@ -12,7 +12,7 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
-  @ApiCreatedResponse({type: UserDto, description: "User created successfuly"})
+  @ApiCreatedResponse({type: UserDto, description: "User created successfully"})
   create(@Body() createUserDto: CreateUserDto) : Promise<UserDto> {
     return this.usersService.create(createUserDto);
   }
@@ -27,6 +27,7 @@ export class UsersController {
   @Get(':id')
   @ApiOkResponse({type: UserDto, description: 'User content'})
   @ApiResponse(CommonResponses.Unauthorized)
+  @ApiNotFoundResponse({description: 'User not found'})
   async findOne(@Param('id') id: string){
     const user = await this.usersService.findOne({ id });
     if (!user) {
@@ -38,6 +39,7 @@ export class UsersController {
   @Patch(':id')
   @ApiResponse(CommonResponses.Unauthorized)
   @ApiOkResponse({type: UserDto, description: 'Updated user content'})
+  @ApiNotFoundResponse({description: 'User not found'})
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update({
       where: { id },
@@ -47,6 +49,7 @@ export class UsersController {
 
   @Delete(':id')
   @ApiResponse(CommonResponses.Unauthorized)
+  @ApiNotFoundResponse({description: 'User not found'})
   @ApiOkResponse({type: UserDto, description: 'Removed user content'})
   remove(@Param('id') id: string) {
     return this.usersService.remove({ id });

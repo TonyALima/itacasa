@@ -61,9 +61,9 @@ model Contrato {
   dataInicio   DateTime
   dataFim      DateTime?
   imovelId     String       @unique
-  imovel       Imovel?      @relation(fields: [imovelId], references: [id])
+  imovel       Imovel      @relation(fields: [imovelId], references: [id])
   clienteId    String
-  cliente      User?        @relation(fields: [clienteId], references: [id])
+  cliente      User        @relation(fields: [clienteId], references: [id])
   tipoOperacao TipoOperacao
 }
 
