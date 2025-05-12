@@ -13,15 +13,18 @@ export class UsersController {
 
   @Post()
   @ApiCreatedResponse({type: UserDto, description: "User created successfully"})
-  create(@Body() createUserDto: CreateUserDto) : Promise<UserDto> {
-    return this.usersService.create(createUserDto);
+  async create(@Body() createUserDto: CreateUserDto) {
+    const user = await this.usersService.create(createUserDto);
+    const { senha, ...userWithoutSenha } = user;
+    return userWithoutSenha;
   }
 
   @Get()
   @ApiResponse(CommonResponses.Unauthorized)
   @ApiOkResponse({type: [UserDto], description: 'List of users'})
-  findAll() {
-    return this.usersService.findAll();
+  async findAll() {
+    const users = await this.usersService.findAll();
+    return users.map(({ senha, ...userWithoutSenha }) => userWithoutSenha); 
   }
 
   @Get(':id')
@@ -33,25 +36,30 @@ export class UsersController {
     if (!user) {
       throw new HttpException(`User with ID ${id} not found`, HttpStatus.NOT_FOUND);
     }
-    return user;
+    const { senha, ...userWithoutSenha } = user;
+    return userWithoutSenha;
   }
 
   @Patch(':id')
   @ApiResponse(CommonResponses.Unauthorized)
   @ApiOkResponse({type: UserDto, description: 'Updated user content'})
   @ApiNotFoundResponse({description: 'User not found'})
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update({
+  async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+    const user = await this.usersService.update({
       where: { id },
       data: updateUserDto,
     });
+    const { senha, ...userWithoutSenha } = user;
+    return userWithoutSenha;
   }
 
   @Delete(':id')
   @ApiResponse(CommonResponses.Unauthorized)
   @ApiNotFoundResponse({description: 'User not found'})
   @ApiOkResponse({type: UserDto, description: 'Removed user content'})
-  remove(@Param('id') id: string) {
-    return this.usersService.remove({ id });
+  async remove(@Param('id') id: string) {
+    const user = await this.usersService.remove({ id });
+    const { senha, ...userWithoutSenha } = user;
+    return userWithoutSenha;
   }
 }
