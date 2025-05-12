@@ -23,6 +23,7 @@ model User {
   id        String     @id @default(cuid())
   nome      String
   cpf       String     @unique
+  /// @IsEmail()
   email     String     @unique
   /// @DtoEntityHidden
   senha     String
@@ -77,7 +78,7 @@ generator nestjs_dto {
   createDtoPrefix                 = "Create"
   updateDtoPrefix                 = "Update"
   dtoSuffix                       = "Dto"
-  classValidation                 = "false"
+  classValidation                 = "true"
   fileNamingStyle                 = "camel"
   noDependencies                  = "false"
   outputType                      = "class"

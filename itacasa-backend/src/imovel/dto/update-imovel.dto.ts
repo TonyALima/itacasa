@@ -1,5 +1,6 @@
 import { TipoImovel } from '@prisma/client';
 import { ApiProperty } from '@nestjs/swagger';
+import { IsEnum, IsInt, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class UpdateImovelDto {
   @ApiProperty({
@@ -7,36 +8,48 @@ export class UpdateImovelDto {
     required: false,
     nullable: true,
   })
+  @IsOptional()
+  @IsString()
   cidade?: string | null;
   @ApiProperty({
     type: 'string',
     required: false,
     nullable: true,
   })
+  @IsOptional()
+  @IsString()
   bairro?: string | null;
   @ApiProperty({
     type: 'integer',
     format: 'int32',
     required: false,
   })
+  @IsOptional()
+  @IsInt()
   valor?: number;
   @ApiProperty({
     type: 'number',
     format: 'float',
     required: false,
   })
+  @IsOptional()
+  @IsNumber()
   areaConstruida?: number;
   @ApiProperty({
     type: 'integer',
     format: 'int32',
     required: false,
   })
+  @IsOptional()
+  @IsInt()
   numQuartos?: number;
   @ApiProperty({
     enum: TipoImovel,
     enumName: 'TipoImovel',
     required: false,
   })
+  @IsOptional()
+  @IsEnum(TipoImovel)
   tipo?: TipoImovel;
   @ApiProperty({
     type: 'number',
@@ -44,6 +57,8 @@ export class UpdateImovelDto {
     required: false,
     nullable: true,
   })
+  @IsOptional()
+  @IsNumber()
   tamanhoQuintal?: number | null;
   @ApiProperty({
     type: 'integer',
@@ -51,5 +66,7 @@ export class UpdateImovelDto {
     required: false,
     nullable: true,
   })
+  @IsOptional()
+  @IsInt()
   andar?: number | null;
 }
