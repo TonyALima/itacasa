@@ -2,10 +2,11 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { ImovelService } from './imovel.service';
 import { CreateImovelDto } from './dto/create-imovel.dto';
 import { UpdateImovelDto } from './dto/update-imovel.dto';
-import { ApiCreatedResponse, ApiResponse, ApiNotFoundResponse, ApiOkResponse } from '@nestjs/swagger';
+import { ApiCreatedResponse, ApiResponse, ApiNotFoundResponse, ApiOkResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { ImovelDto } from './dto/imovel.dto';
 import { CommonResponses } from 'src/commom.responses';
 
+@ApiBearerAuth()
 @Controller('imovel')
 export class ImovelController {
   constructor(private readonly imovelService: ImovelService) {}

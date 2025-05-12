@@ -1,14 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { User, Prisma } from '@prisma/client';
-import * as argon2 from 'argon2';
+import { AuthService } from 'src/auth/auth.service';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly authService: AuthService
+  ) {}
 
   async create(data: Prisma.UserCreateInput): Promise<User> {
-    data.senha = await argon2.hash(data.senha);
+    data.senha = await this.authService.hashPassword(data.senha);
     return this.prisma.user.create({
       data,
     });

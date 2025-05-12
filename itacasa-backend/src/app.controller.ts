@@ -1,7 +1,12 @@
 import { Controller, Get } from '@nestjs/common';
 import { AppService } from './app.service';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { SetMetadata } from '@nestjs/common';
 
+export const IS_PUBLIC_KEY = 'isPublic';
+export const Public = () => SetMetadata(IS_PUBLIC_KEY, true);
+
+@Public()
 @ApiTags('Root')
 @Controller()
 export class AppController {

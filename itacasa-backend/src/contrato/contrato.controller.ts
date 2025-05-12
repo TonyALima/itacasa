@@ -2,10 +2,11 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, HttpS
 import { ContratoService } from './contrato.service';
 import { CreateContratoDto } from './dto/create-contrato.dto';
 import { UpdateContratoDto } from './dto/update-contrato.dto';
-import { ApiCreatedResponse, ApiResponse, ApiNotFoundResponse, ApiOkResponse } from '@nestjs/swagger';
+import { ApiCreatedResponse, ApiResponse, ApiNotFoundResponse, ApiOkResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { ContratoDto } from './dto/contrato.dto';
 import { CommonResponses } from 'src/commom.responses';
 
+@ApiBearerAuth()
 @Controller('contrato')
 export class ContratoController {
   constructor(private readonly contratoService: ContratoService) { }

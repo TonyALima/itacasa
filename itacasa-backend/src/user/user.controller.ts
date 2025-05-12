@@ -1,18 +1,38 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, HttpStatus } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
 import { UsersService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ApiResponse, ApiOkResponse, ApiCreatedResponse, ApiNotFoundResponse} from '@nestjs/swagger';
+import {
+  ApiResponse,
+  ApiOkResponse,
+  ApiCreatedResponse,
+  ApiNotFoundResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { UserDto } from './dto/user.dto';
 import { CommonResponses } from 'src/commom.responses';
+import { SetMetadata } from '@nestjs/common';
 
+export const IS_PUBLIC_KEY = 'isPublic';
+export const Public = () => SetMetadata(IS_PUBLIC_KEY, true);
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService) { }
 
+  @Public()
   @Post()
-  @ApiCreatedResponse({type: UserDto, description: "User created successfully"})
+  @ApiCreatedResponse({ type: UserDto, description: "User created successfully" })
   async create(@Body() createUserDto: CreateUserDto) {
     const user = await this.usersService.create(createUserDto);
     const { senha, ...userWithoutSenha } = user;
@@ -20,18 +40,20 @@ export class UsersController {
   }
 
   @Get()
+  @ApiBearerAuth()
   @ApiResponse(CommonResponses.Unauthorized)
-  @ApiOkResponse({type: [UserDto], description: 'List of users'})
+  @ApiOkResponse({ type: [UserDto], description: 'List of users' })
   async findAll() {
     const users = await this.usersService.findAll();
-    return users.map(({ senha, ...userWithoutSenha }) => userWithoutSenha); 
+    return users.map(({ senha, ...userWithoutSenha }) => userWithoutSenha);
   }
 
   @Get(':id')
-  @ApiOkResponse({type: UserDto, description: 'User content'})
+  @ApiBearerAuth()
+  @ApiOkResponse({ type: UserDto, description: 'User content' })
   @ApiResponse(CommonResponses.Unauthorized)
-  @ApiNotFoundResponse({description: 'User not found'})
-  async findOne(@Param('id') id: string){
+  @ApiNotFoundResponse({ description: 'User not found' })
+  async findOne(@Param('id') id: string) {
     const user = await this.usersService.findOne({ id });
     if (!user) {
       throw new HttpException(`User with ID ${id} not found`, HttpStatus.NOT_FOUND);
@@ -41,9 +63,10 @@ export class UsersController {
   }
 
   @Patch(':id')
+  @ApiBearerAuth()
   @ApiResponse(CommonResponses.Unauthorized)
-  @ApiOkResponse({type: UserDto, description: 'Updated user content'})
-  @ApiNotFoundResponse({description: 'User not found'})
+  @ApiOkResponse({ type: UserDto, description: 'Updated user content' })
+  @ApiNotFoundResponse({ description: 'User not found' })
   async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     const user = await this.usersService.update({
       where: { id },
@@ -54,9 +77,10 @@ export class UsersController {
   }
 
   @Delete(':id')
+  @ApiBearerAuth()
   @ApiResponse(CommonResponses.Unauthorized)
-  @ApiNotFoundResponse({description: 'User not found'})
-  @ApiOkResponse({type: UserDto, description: 'Removed user content'})
+  @ApiNotFoundResponse({ description: 'User not found' })
+  @ApiOkResponse({ type: UserDto, description: 'Removed user content' })
   async remove(@Param('id') id: string) {
     const user = await this.usersService.remove({ id });
     const { senha, ...userWithoutSenha } = user;

@@ -9,6 +9,7 @@ async function bootstrap() {
     .setTitle('Itacasa API')
     .setDescription('Itacasa')
     .setVersion(version)
+    .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document);
