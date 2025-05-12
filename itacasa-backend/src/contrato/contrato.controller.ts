@@ -5,6 +5,7 @@ import { UpdateContratoDto } from './dto/update-contrato.dto';
 import { ApiCreatedResponse, ApiResponse, ApiNotFoundResponse, ApiOkResponse, ApiBearerAuth, ApiBadRequestResponse } from '@nestjs/swagger';
 import { ContratoDto } from './dto/contrato.dto';
 import { CommonResponses } from 'src/commom.responses';
+import { TipoUser } from '@prisma/client';
 
 @ApiBearerAuth()
 @UsePipes(new ValidationPipe({transform: true}))
@@ -22,13 +23,16 @@ export class ContratoController {
     @Param('imovelId') imovelId: string,
     @Body() createContratoDto: CreateContratoDto,
   ) {
-    const cliente = await this.contratoService.findOne({ id: userId });
-    if (!cliente) {
-      throw new Error(`Cliente with ID ${userId} not found`);
+    const user = await this.contratoService.findUserById(userId);
+    if (!user) {
+      throw new HttpException(`Cliente with ID ${userId} not found`, HttpStatus.NOT_FOUND);
+    }
+    if (user.tipo != TipoUser.CLIENTE){
+      throw new HttpException('User is not a cliente', HttpStatus.BAD_REQUEST);
     }
     const imovel = await this.contratoService.findImovelById(imovelId);
     if (!imovel) {
-      throw new Error(`Imovel with ID ${imovelId} not found`);
+      throw new HttpException(`Imovel with ID ${imovelId} not found`, HttpStatus.NOT_FOUND);
     }
     const contratoInput = {
       cliente: {

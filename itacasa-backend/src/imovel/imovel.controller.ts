@@ -1,10 +1,11 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe, UsePipes } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe, UsePipes, HttpException, HttpStatus } from '@nestjs/common';
 import { ImovelService } from './imovel.service';
 import { CreateImovelDto } from './dto/create-imovel.dto';
 import { UpdateImovelDto } from './dto/update-imovel.dto';
 import { ApiCreatedResponse, ApiResponse, ApiNotFoundResponse, ApiOkResponse, ApiBearerAuth, ApiBadRequestResponse } from '@nestjs/swagger';
 import { ImovelDto } from './dto/imovel.dto';
 import { CommonResponses } from 'src/commom.responses';
+import { TipoUser } from '@prisma/client';
 
 @ApiBearerAuth()
 @UsePipes(new ValidationPipe({transform: true}))
@@ -17,14 +18,19 @@ export class ImovelController {
   @ApiResponse(CommonResponses.Unauthorized)
   @ApiNotFoundResponse({description: 'User not found'})
   @ApiBadRequestResponse({ description: 'Bad Request - Invalid or missign field' })
-  create(
+  async create(
     @Param('userId') userId: string,
     @Body() createImovelDto: CreateImovelDto
   ) {
-    const proprietario = this.imovelService.findUserById(userId);
-    if (!proprietario) {
-      throw new Error(`User with ID ${userId} not found`);
+    const user = await this.imovelService.findUserById(userId);
+    if (!user) {
+      throw new HttpException(`User with ID ${userId} not found`, HttpStatus.NOT_FOUND);
     }
+    
+    if (user.tipo != TipoUser.PROPRIETARIO){
+      throw new HttpException('User is not a proprietario', HttpStatus.BAD_REQUEST);
+    }
+
     const imovelInput = {
       proprietario: {
         connect: { id: userId },
