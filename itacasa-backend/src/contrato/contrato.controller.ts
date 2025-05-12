@@ -1,12 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, HttpStatus, UsePipes, ValidationPipe } from '@nestjs/common';
 import { ContratoService } from './contrato.service';
 import { CreateContratoDto } from './dto/create-contrato.dto';
 import { UpdateContratoDto } from './dto/update-contrato.dto';
-import { ApiCreatedResponse, ApiResponse, ApiNotFoundResponse, ApiOkResponse, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiCreatedResponse, ApiResponse, ApiNotFoundResponse, ApiOkResponse, ApiBearerAuth, ApiBadRequestResponse } from '@nestjs/swagger';
 import { ContratoDto } from './dto/contrato.dto';
 import { CommonResponses } from 'src/commom.responses';
 
 @ApiBearerAuth()
+@UsePipes(new ValidationPipe({transform: true}))
 @Controller('contrato')
 export class ContratoController {
   constructor(private readonly contratoService: ContratoService) { }
@@ -15,6 +16,7 @@ export class ContratoController {
   @ApiCreatedResponse({ type: ContratoDto, description: 'Contrato created successfully' })
   @ApiResponse(CommonResponses.Unauthorized)
   @ApiNotFoundResponse({description: 'User not found'})
+  @ApiBadRequestResponse({ description: 'Bad Request - Invalid or missign field' })
   async create(
     @Param('userId') userId: string,
     @Param('imovelId') imovelId: string,
@@ -75,6 +77,7 @@ export class ContratoController {
   @ApiOkResponse({ type: ContratoDto, description: 'Contrato content' })
   @ApiResponse(CommonResponses.Unauthorized)
   @ApiNotFoundResponse({description: 'Contrato not found'})
+  @ApiBadRequestResponse({ description: 'Bad Request - Invalid or missign field' })
   findOne(@Param('id') id: string) {
     return this.contratoService.findOne({ id });
   }
@@ -83,6 +86,7 @@ export class ContratoController {
   @ApiOkResponse({ type: ContratoDto, description: 'Updated contrato content' })
   @ApiResponse(CommonResponses.Unauthorized)
   @ApiNotFoundResponse({description: 'Contrato not found'})
+  @ApiBadRequestResponse({ description: 'Bad Request - Invalid or missign field' })
   update(@Param('id') id: string, @Body() updateContratoDto: UpdateContratoDto) {
     return this.contratoService.update({
       where: { id },

@@ -1,12 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe, UsePipes } from '@nestjs/common';
 import { ImovelService } from './imovel.service';
 import { CreateImovelDto } from './dto/create-imovel.dto';
 import { UpdateImovelDto } from './dto/update-imovel.dto';
-import { ApiCreatedResponse, ApiResponse, ApiNotFoundResponse, ApiOkResponse, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiCreatedResponse, ApiResponse, ApiNotFoundResponse, ApiOkResponse, ApiBearerAuth, ApiBadRequestResponse } from '@nestjs/swagger';
 import { ImovelDto } from './dto/imovel.dto';
 import { CommonResponses } from 'src/commom.responses';
 
 @ApiBearerAuth()
+@UsePipes(new ValidationPipe({transform: true}))
 @Controller('imovel')
 export class ImovelController {
   constructor(private readonly imovelService: ImovelService) {}
@@ -15,6 +16,7 @@ export class ImovelController {
   @ApiCreatedResponse({ type: ImovelDto, description: 'Imovel created successfully' })
   @ApiResponse(CommonResponses.Unauthorized)
   @ApiNotFoundResponse({description: 'User not found'})
+  @ApiBadRequestResponse({ description: 'Bad Request - Invalid or missign field' })
   create(
     @Param('userId') userId: string,
     @Body() createImovelDto: CreateImovelDto
@@ -61,6 +63,7 @@ export class ImovelController {
   @ApiOkResponse({ type: ImovelDto, description: 'Updated imovel content' })
   @ApiResponse(CommonResponses.Unauthorized)
   @ApiNotFoundResponse({description: 'Imovel not found'})
+  @ApiBadRequestResponse({ description: 'Bad Request - Invalid or missign field' })
   update(@Param('id') id: string, @Body() updateImovelDto: UpdateImovelDto) {
     return this.imovelService.update(
       {

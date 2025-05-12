@@ -8,6 +8,8 @@ import {
   Delete,
   HttpException,
   HttpStatus,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { UsersService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -18,6 +20,7 @@ import {
   ApiCreatedResponse,
   ApiNotFoundResponse,
   ApiBearerAuth,
+  ApiBadRequestResponse,
 } from '@nestjs/swagger';
 import { UserDto } from './dto/user.dto';
 import { CommonResponses } from 'src/commom.responses';
@@ -26,6 +29,7 @@ import { SetMetadata } from '@nestjs/common';
 export const IS_PUBLIC_KEY = 'isPublic';
 export const Public = () => SetMetadata(IS_PUBLIC_KEY, true);
 
+@UsePipes(new ValidationPipe({transform: true}))
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) { }
@@ -33,6 +37,7 @@ export class UsersController {
   @Public()
   @Post()
   @ApiCreatedResponse({ type: UserDto, description: "User created successfully" })
+  @ApiBadRequestResponse({ description: 'Bad Request - Invalid or missign field' })
   async create(@Body() createUserDto: CreateUserDto) {
     const user = await this.usersService.create(createUserDto);
     const { senha, ...userWithoutSenha } = user;
@@ -67,6 +72,7 @@ export class UsersController {
   @ApiResponse(CommonResponses.Unauthorized)
   @ApiOkResponse({ type: UserDto, description: 'Updated user content' })
   @ApiNotFoundResponse({ description: 'User not found' })
+  @ApiBadRequestResponse({ description: 'Bad Request - Invalid or missign field' })
   async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     const user = await this.usersService.update({
       where: { id },
