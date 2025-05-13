@@ -13,13 +13,13 @@ import { TipoUser } from '@prisma/client';
 export class ContratoController {
   constructor(private readonly contratoService: ContratoService) { }
 
-  @Post('user/:userId/imovel/:imovelId')
+  @Post('cliente/:clienteId/imovel/:imovelId')
   @ApiCreatedResponse({ type: ContratoDto, description: 'Contrato created successfully' })
   @ApiResponse(CommonResponses.Unauthorized)
   @ApiNotFoundResponse({description: 'User not found'})
   @ApiBadRequestResponse({ description: 'Bad Request - Invalid or missign field' })
   async create(
-    @Param('userId') userId: string,
+    @Param('clienteId') userId: string,
     @Param('imovelId') imovelId: string,
     @Body() createContratoDto: CreateContratoDto,
   ) {
@@ -53,7 +53,7 @@ export class ContratoController {
     return this.contratoService.findAll();
   }
 
-  @Get('user/:userId')
+  @Get('cliente/:clienteId')
   @ApiOkResponse({ type: [ContratoDto], description: 'List of contratos for a specific user' })
   @ApiResponse(CommonResponses.Unauthorized)
   findByUser(@Param('userId') userId: string) {

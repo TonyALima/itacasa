@@ -55,7 +55,7 @@ export class ImovelController {
     return this.imovelService.findOne({ id });
   }
 
-  @Get('user/:userId')
+  @Get('proprietario/:proprietarioId')
   @ApiOkResponse({ type: [ImovelDto], description: 'List of imoveis for a specific user' })
   @ApiResponse(CommonResponses.Unauthorized)
   @ApiNotFoundResponse({description: 'User not found'})
