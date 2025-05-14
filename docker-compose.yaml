@@ -14,8 +14,6 @@ services:
     build:
       context: ./itacasa-backend
       dockerfile: Dockerfile
-    volumes:
-      - ./backend:/app
     ports:
       - 3000:3000
     depends_on:
