@@ -9,3 +9,14 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - 5432:5432
+  
+  backend:
+    build:
+      context: ./itacasa-backend
+      dockerfile: Dockerfile
+    volumes:
+      - ./backend:/app
+    ports:
+      - 3000:3000
+    depends_on:
+      - db
