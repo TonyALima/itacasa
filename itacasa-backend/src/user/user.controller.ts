@@ -29,15 +29,20 @@ import { SetMetadata } from '@nestjs/common';
 export const IS_PUBLIC_KEY = 'isPublic';
 export const Public = () => SetMetadata(IS_PUBLIC_KEY, true);
 
-@UsePipes(new ValidationPipe({transform: true}))
+@UsePipes(new ValidationPipe({ transform: true }))
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) { }
+  constructor(private readonly usersService: UsersService) {}
 
   @Public()
   @Post()
-  @ApiCreatedResponse({ type: UserDto, description: "User created successfully" })
-  @ApiBadRequestResponse({ description: 'Bad Request - Invalid or missign field' })
+  @ApiCreatedResponse({
+    type: UserDto,
+    description: 'User created successfully',
+  })
+  @ApiBadRequestResponse({
+    description: 'Bad Request - Invalid or missing field',
+  })
   async create(@Body() createUserDto: CreateUserDto) {
     const user = await this.usersService.create(createUserDto);
     const { senha, ...userWithoutSenha } = user;
@@ -61,7 +66,10 @@ export class UsersController {
   async findOne(@Param('id') id: string) {
     const user = await this.usersService.findOne({ id });
     if (!user) {
-      throw new HttpException(`User with ID ${id} not found`, HttpStatus.NOT_FOUND);
+      throw new HttpException(
+        `User with ID ${id} not found`,
+        HttpStatus.NOT_FOUND,
+      );
     }
     const { senha, ...userWithoutSenha } = user;
     return userWithoutSenha;
@@ -72,7 +80,9 @@ export class UsersController {
   @ApiResponse(CommonResponses.Unauthorized)
   @ApiOkResponse({ type: UserDto, description: 'Updated user content' })
   @ApiNotFoundResponse({ description: 'User not found' })
-  @ApiBadRequestResponse({ description: 'Bad Request - Invalid or missign field' })
+  @ApiBadRequestResponse({
+    description: 'Bad Request - Invalid or missing field',
+  })
   async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     const user = await this.usersService.update({
       where: { id },

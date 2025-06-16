@@ -4,3 +4,4 @@ generated
 migrations
 volumes
 .env
+*.pdf

@@ -7,7 +7,7 @@ import { AuthService } from 'src/auth/auth.service';
 export class UsersService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly authService: AuthService
+    private readonly authService: AuthService,
   ) {}
 
   async create(data: Prisma.UserCreateInput): Promise<User> {
