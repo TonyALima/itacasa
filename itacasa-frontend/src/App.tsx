@@ -1,11 +1,8 @@
-import './App.css'
-import ImovelForms from './ImovelForms'
+import "./App.css";
+import ImovelForms from "./ImovelForms";
 
 function App() {
-
-  return (
-    <ImovelForms />
-  )
+    return <ImovelForms />;
 }
 
-export default App
+export default App;
