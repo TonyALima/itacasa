@@ -11,6 +11,7 @@ import DarkModeIcon from "@mui/icons-material/DarkMode";
 import { useThemeMode } from "../theme/useThemeMode";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/use-auth";
+import { HomeWork } from "@mui/icons-material";
 const Header = () => {
     const { isDark, toggleTheme } = useThemeMode();
     const { logout } = useAuth();
@@ -22,7 +23,10 @@ const Header = () => {
     return (
         <AppBar position="static" color="primary" elevation={2}>
             <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-                <Typography variant="h6">Meu App</Typography>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                    <HomeWork />
+                    <Typography variant="h6">Itacasa</Typography>
+                </Box>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                     <IconButton color="inherit" onClick={toggleTheme}>
                         {isDark ? <LightModeIcon /> : <DarkModeIcon />}
