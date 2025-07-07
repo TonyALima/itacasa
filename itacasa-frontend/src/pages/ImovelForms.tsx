@@ -10,8 +10,11 @@ import {
     FormHelperText,
 } from "@mui/material";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function ImovelForms() {
+    const navigate = useNavigate();
+
     const [formData, setFormData] = useState({
         tipo: "",
         cidade: "",
@@ -105,18 +108,22 @@ export default function ImovelForms() {
             areaQuintal: "",
         });
     };
+
+    const handleBack = () => {
+        navigate("/");
+    };
     return (
-        <Box className="flex flex-col items-center justify-center min-h-screen w-full bg-gray-100 py-10">
+        <Box className="flex flex-col items-center justify-center min-h-screen w-full bg-background-default py-10">
             <form
                 onSubmit={handleSubmit}
-                className="bg-white rounded-2xl shadow-lg px-12 py-12 w-full max-w-2xl min-w-[500px] mx-auto"
+                className="bg-background-paper rounded-2xl shadow-lg px-12 py-12 w-full max-w-2xl min-w-[500px] mx-auto"
             >
                 <Stack className="gap-6 p-4">
                     <Stack
                         direction="row"
                         className="flex flex-row items-center gap-4"
                     >
-                        <span className="text-xl font-semibold">
+                        <span className="text-xl font-semibold text-text-primary">
                             Tipo de Imóvel
                         </span>
                         <FormControl
@@ -281,6 +288,14 @@ export default function ImovelForms() {
                         justifyContent="center"
                         className="flex flex-row justify-center gap-4"
                     >
+                        <Button
+                            type="button"
+                            variant="outlined"
+                            onClick={handleBack}
+                            className="flex-1 text-lg py-3 rounded-lg min-w-[180px]"
+                        >
+                            Voltar
+                        </Button>
                         <Button
                             type="submit"
                             variant="contained"
