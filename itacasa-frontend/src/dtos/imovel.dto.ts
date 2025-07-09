@@ -1,9 +1,6 @@
 import { z } from "zod";
 
-const tipoImovelEnumSchema = z.enum([
-    "CASA",
-    "APARTAMENTO",
-]);
+const tipoImovelEnumSchema = z.enum(["CASA", "APARTAMENTO"]);
 
 export const imovelSchema = z.object({
     id: z.string().cuid(),
@@ -19,4 +16,5 @@ export const imovelSchema = z.object({
 });
 
 export type Imovel = z.infer<typeof imovelSchema>;
+export type ImovelPayload = Omit<Imovel, "id" | "proprietarioId">;
 export type TipoImovelEnum = z.infer<typeof tipoImovelEnumSchema>;

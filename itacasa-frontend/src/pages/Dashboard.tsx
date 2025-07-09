@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import {
     Box,
     Typography,
@@ -9,30 +8,25 @@ import {
 } from "@mui/material";
 import { Grid } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import axios from "../api/axios";
 import Header from "../components/Header";
-import { type Imovel } from "../dtos/imovel.dto";
 import ImovelCard from "../components/Imovel";
 import { Add } from "@mui/icons-material";
+import { useImoveis } from "../hooks/useImoveis";
+import { useAuth } from "../auth/use-auth";
+import { useEffect } from "react";
 
 export default function Dashboard() {
-    const [imoveis, setImoveis] = useState<Imovel[]>([]);
-    const [carregando, setCarregando] = useState(true);
-    const [erro, setErro] = useState("");
+    const { token, payload } = useAuth();
+
     const navigate = useNavigate();
+    const { imoveis } = useImoveis({ userId: payload?.sub });
+
     useEffect(() => {
-        const carregarImoveis = async () => {
-            try {
-                const response = await axios.get<Imovel[]>("/imovel");
-                setImoveis(response.data);
-            } catch {
-                setErro("Erro ao carregar os imoveis");
-            } finally {
-                setCarregando(false);
-            }
-        };
-        carregarImoveis();
-    }, []);
+        if (!token) {
+            navigate("/login");
+        }
+    }, [token, navigate]);
+
     return (
         <Box className="min-h-screen w-full bg-background-default">
             <Header />
@@ -47,7 +41,18 @@ export default function Dashboard() {
                             Lista de Imoveis
                         </Typography>
 
-                        <Box className="flex justify-end mb-6">
+                        <Box className="flex justify-between items-center mb-6">
+                            <Button
+                                variant="outlined"
+                                onClick={() =>
+                                    imoveis.mutate(undefined, {
+                                        revalidate: true,
+                                    })
+                                }
+                                disabled={imoveis.isLoading}
+                            >
+                                Atualizar Lista
+                            </Button>
                             <Button
                                 variant="contained"
                                 color="primary"
@@ -59,19 +64,32 @@ export default function Dashboard() {
                             </Button>
                         </Box>
 
-                        {carregando ? (
+                        {imoveis.isLoading ? (
                             <Box className="flex justify-center mt-4">
                                 <CircularProgress />
                             </Box>
-                        ) : erro ? (
+                        ) : imoveis.error ? (
                             <Alert severity="error" className="mt-4">
-                                {erro}
+                                {imoveis.error}
                             </Alert>
+                        ) : imoveis.data && imoveis.data.length === 0 ? (
+                            <Box className="text-center mt-8">
+                                <Typography variant="h6" color="textSecondary">
+                                    Nenhum imóvel encontrado
+                                </Typography>
+                                <Typography
+                                    variant="body2"
+                                    color="textSecondary"
+                                    className="mt-2"
+                                >
+                                    Clique em "Adicionar Imóvel" para começar
+                                </Typography>
+                            </Box>
                         ) : (
                             <Grid container spacing={3} className="mt-4">
-                                {imoveis.map((imovel) => (
+                                {imoveis.data?.map((imovel) => (
                                     <Grid size={12} key={imovel.id}>
-                                        <ImovelCard {...imovel} />
+                                        <ImovelCard imovel={imovel} />
                                     </Grid>
                                 ))}
                             </Grid>

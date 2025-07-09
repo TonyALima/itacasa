@@ -9,11 +9,22 @@ import {
     Stack,
     FormHelperText,
 } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../auth/use-auth";
+import { useImoveis } from "../hooks/useImoveis";
+import type { ImovelPayload } from "../dtos/imovel.dto";
 
 export default function ImovelForms() {
     const navigate = useNavigate();
+    const { token, payload } = useAuth();
+    const { createImovel } = useImoveis({ userId: payload?.sub });
+
+    useEffect(() => {
+        if (!token) {
+            navigate("/login");
+        }
+    }, [token, navigate]);
 
     const [formData, setFormData] = useState({
         tipo: "",
@@ -96,17 +107,28 @@ export default function ImovelForms() {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (!validate()) return;
-        console.log("Dados do formulário:", formData);
-        setFormData({
-            tipo: "",
-            cidade: "",
-            bairro: "",
-            andar: "",
-            numQuartos: "",
-            area: "",
-            valor: "",
-            areaQuintal: "",
-        });
+        const valorNumber = Number(formData.valor.replace(/\D/g, "")) / 100;
+
+        const imovelData: ImovelPayload = {
+            tipo: formData.tipo.toUpperCase() as "CASA" | "APARTAMENTO",
+            cidade: formData.cidade || null,
+            bairro: formData.bairro || null,
+            numQuartos: Number(formData.numQuartos),
+            areaConstruida: Number(formData.area),
+            valor: valorNumber,
+        };
+
+        // Adiciona campos condicionais
+        if (formData.tipo === "apartamento" && formData.andar) {
+            imovelData.andar = Number(formData.andar);
+        }
+
+        if (formData.tipo === "casa" && formData.areaQuintal) {
+            imovelData.tamanhoQuintal = Number(formData.areaQuintal);
+        }
+
+        createImovel(imovelData);
+        navigate("/");
     };
 
     const handleBack = () => {
