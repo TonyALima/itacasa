@@ -21,7 +21,7 @@ export class AuthService {
     if (!user) {
       throw new HttpException('User not Found', HttpStatus.NOT_FOUND);
     }
-    const validPassword = this.verifyPassword(user.senha, senha);
+    const validPassword = await this.verifyPassword(user.senha, senha);
     if (!validPassword) {
       throw new HttpException('Invalid Credentials', HttpStatus.UNAUTHORIZED);
     }
